@@ -2,7 +2,7 @@
 <%= stylesheet_link_tag "skins/dhtmlxgantt_skyblue", :media=> "all" %> 
 
 <%= javascript_include_tag "dhtmlxgantt" %>  
-<%= javascript_include_tag "locale/locale_en" %>  
+<%= javascript_include_tag "locale/locale" %>  
 
 <%= javascript_include_tag "ext/dhtmlxgantt_marker" %>  
 <%= javascript_include_tag "ext/dhtmlxgantt_quick_info" %>  
@@ -22,3 +22,9 @@
   var dp = new dataProcessor("<%= db_action_path %>");
   dp.init(gantt);
 </script>
+
+<style>
+  [task_id^='task-'] .gantt_add, .gantt_grid_head_add {
+    display: none !important;
+  }
+</style>
