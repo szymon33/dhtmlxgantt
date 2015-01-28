@@ -50,6 +50,8 @@ in your `config/initializers/assets.rb` file.
 
 There are some task examples in `db/seeds.rb` file. So, you might begin with run `rake db:setup`
 
-and your diagram should look like this
+and your chart should look like this
 
 ![Screentshot](https://raw.github.com/szymon33/dhtmlxgantt/master/screenshot1.png)
+
+![Screentshot](https://raw.github.com/szymon33/dhtmlxgantt/master/screenshot2.png)
