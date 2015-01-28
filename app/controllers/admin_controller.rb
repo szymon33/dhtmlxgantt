@@ -10,19 +10,19 @@ class AdminController < ApplicationController
     render :json => {
       data: (projects.map do |project| 
         {
-          id: "project-#{project.id}",
+          id: "projects-#{project.id}",
           text: project.text,
           type: 'project',
           open: true
         }
       end) + tasks.map do |task|
         {
-          id: "task-#{task.id}",
+          id: "tasks-#{task.id}",
           text: task.text,
           start_date: task.start_date,
           duration: task.duration,
           progress: task.progress,
-          parent: "project-#{task.project_id}",
+          parent: "projects-#{task.project_id}",
           type: 'task'
         }
       end,
@@ -30,8 +30,8 @@ class AdminController < ApplicationController
       links: links.map do |link|
       {
         id: link.id,
-        source: "task-#{link.source_id}", 
-        target: "task-#{link.target_id}", 
+        source: "tasks-#{link.source_id}", 
+        target: "tasks-#{link.target_id}", 
         type: link.gtype
       }  
       end
@@ -39,59 +39,74 @@ class AdminController < ApplicationController
   end  
 
   def db_action
-    @gantt_mode = params['gantt_mode']
-    @id = params['ids']
-    db_id = @id.scan(/\d/).join('')
-    @mode = params["#{@id}_!nativeeditor_status"]
+    params['ids'].split(',').each do |id|
+      @id = id
+      db_id = @id.scan(/\d/).join('') unless @mode=='inserted'      
+      @mode = params["#{@id}_!nativeeditor_status"]    
 
-    case @gantt_mode
-    when "tasks"
-      case @mode
-      when "inserted"
-          task = Task.new
-          # task.id = @id
-          task_from_params(task, @id)
-          task.save
-          @tid = task.id
+      # project is a task but we need the project to be the project
+      @gantt_mode = if params['gantt_mode'] == 'tasks' and not @mode=='inserted' then
+        @id.split('-')[0] 
+      else
+        params['gantt_mode']
+      end
 
-      when "deleted"
-          task = Task.find(db_id)
-          task.destroy
-          @tid = task.id
+      case @gantt_mode
+      when "tasks"
+        case @mode
+        when "inserted"
+            task = Task.new
+            task_from_params(task, @id)
+            task.save
+            @tid = task.id
 
-      when "updated"
-          task = Task.find(db_id)
-          task_from_params(task, @id)
-          task.save
-          @tid = db_id
+        when "deleted"
+            task = Task.find(db_id)
+            @tid = task.destroy.id
 
-      when "order"
-      end              
+        when "updated"
+            task = Task.find(db_id)
+            task_from_params(task, @id)
+            task.save
+            @tid = db_id
 
-
-    when "links"
-      case @mode
-      when "inserted"
-          link = GanttLink.new
-          # link.id = @id
-          link_from_params(link, @id)
-          link.save
-          @tid = link.id
-
-      when "deleted"
-          link = GanttLink.find(@id)        
-          link.destroy
-          @tid = link.id
-
-      when "updated"
-          link = GanttLink.find(@id)
-          link_from_params(link, @id)
-          link.save
-          @tid = link.id
-      end        
+        when "order"
+        end              
 
 
-    when "projects"
+      when "links"
+        case @mode
+        when "inserted"
+            link = GanttLink.new
+            link_from_params(link, @id)
+            link.save
+            @tid = link.id
+
+        when "deleted"
+            link = GanttLink.find(@id)                  
+            @tid = link.destroy.id
+
+        when "updated"
+            link = GanttLink.find(@id)
+            link_from_params(link, @id)
+            link.save
+            @tid = link.id
+        end        
+
+
+      when "projects"
+        case @mode
+        when "deleted"
+            project = Project.find(db_id)                  
+            @tid = project.destroy.id
+
+        when "updated"
+            project = Project.find(db_id)
+            project_from_params(project, @id)
+            project.save
+            @tid = project.id
+        end              
+      end
     end
   end
 
@@ -106,8 +121,13 @@ class AdminController < ApplicationController
   end
 
   def link_from_params(link, id)    
-    link.source_id = params["#{id}_source"].scan(/\d/).join('').to_i
-    link.target_id = params["#{id}_target"].scan(/\d/).join('').to_i
-    link.gtype  = params["#{id}_type"]
+    link.source_id  = params["#{id}_source"].scan(/\d/).join('').to_i
+    link.target_id  = params["#{id}_target"].scan(/\d/).join('').to_i
+    link.gtype      = params["#{id}_type"]
   end
+
+  def project_from_params(project, id)
+    project.text    = params["#{id}_text"]
+  end
+
 end

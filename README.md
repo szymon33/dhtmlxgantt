@@ -1,4 +1,7 @@
-# RoR implementation of dhtmlx Gantt chart
+RoR implementation of dhtmlx Gantt chart
+========================================
+
+[![Code Climate](https://codeclimate.com/github/szymon33/dhtmlxgantt/badges/gpa.svg)](https://codeclimate.com/github/szymon33/dhtmlxgantt)
 
 The Dhtmlxagantt is an application which implements [dhtmlx](http://dhtmlx.com/) Gantt chart in Rails framework as simple as possible. This document contains implementation notes and gotcha's.
 
@@ -10,25 +13,37 @@ You can read about dhtmlx and their awsome interactive JavaScript Gantt chart [h
 
 * Rails version 4.1
 
-* GUI widget dhtmlx gantt version 3.1 (standard licence)
+* GUI component dhtmlx gantt version 3.1 (standard version)
 
 * Ruby version 2.1
 
-## Limit the default widget
+## Limiting dhtmlx default widget configuration
 
-Default Gantt chart widget functionality is shrinked here. There is just one project and its tasks on the chart. You can add tasks (using plus icon) to the project but you can not add tasks to the task (subtasks). Further, you can not add new project on the chart. You have to create project separately. If you want to omit these limitations then simply take out the following code.
+Default Gantt chart component functionality is shrinked here as follows: 
 
-```css
-<style>
-  [task_id^='task-'] .gantt_add, .gantt_grid_head_add {
-    display: none !important;
-  }
-</style>
-```
+1. You can overview just one project on the chart. 
 
-from your `index.html.erb` file.
+2. You can add task (using plus icon) to the project but you can not add task to the task (subtask). 
+If you want to omit these limitation and keep standard edition then simply take out the following code.
 
-## Assets pipeline
+    ```css
+    <style>
+      [task_id^='task-'] .gantt_add, .gantt_grid_head_add {
+        display: none !important;
+      }
+    </style>
+    ```
+
+    from your `index.html.erb` file.
+
+3. You can add only tasks but not a project because functionality of milestones, projects and adding custom types has been moved to PRO version (commercial or enterprise editions).
+
+
+## Usage notes
+
+If you delete the project then all its links and tasks will be deleted too. Then you can continue by adding tasks which are not related (linked) to any project.
+
+## Asset pipeline
 
 No CSS or JS files will be available to your app through the asset pipeline unless they are listed in the `config.precompile` directive 
 
@@ -46,11 +61,11 @@ Rails.application.config.assets.precompile += %w(
 
 in your `config/initializers/assets.rb` file.
 
-## Task examples
+## Demo
 
 There are some task examples in `db/seeds.rb` file. So, you might begin with run `rake db:setup`
 
-and your chart should look like this
+and your demo chart should look like this
 
 ![Screentshot](https://raw.github.com/szymon33/dhtmlxgantt/master/screenshot1.png)
 
