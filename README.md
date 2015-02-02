@@ -1,5 +1,4 @@
-RoR implementation of dhtmlx Gantt chart
-========================================
+# RoR implementation of dhtmlx Gantt chart
 
 [![Code Climate](https://codeclimate.com/github/szymon33/dhtmlxgantt/badges/gpa.svg)](https://codeclimate.com/github/szymon33/dhtmlxgantt)
 
@@ -39,27 +38,29 @@ If you want to omit these limitation and keep standard edition then simply take 
 3. You can add only tasks but not a project because functionality of milestones, projects and adding custom types has been moved to PRO version (commercial or enterprise editions).
 
 
-## Usage notes
-
-If you delete the project then all its links and tasks will be deleted too. Then you can continue by adding tasks which are not related (linked) to any project.
-
 ## Asset pipeline
 
 No CSS or JS files will be available to your app through the asset pipeline unless they are listed in the `config.precompile` directive 
 
-```ruby
-Rails.application.config.assets.precompile += %w( 
-  dhtmlxgantt.css 
-  skins/dhtmlxgantt_skyblue.css
-  dhtmlxgantt.js 
-  locale/locale.js 
-  ext/dhtmlxgantt_marker.js 
-  ext/dhtmlxgantt_quick_info.js
-  ext/dhtmlxgantt_tooltip.js
-)
-```
+  ```ruby
+  Rails.application.config.assets.precompile += %w( 
+    dhtmlxgantt.css 
+    skins/dhtmlxgantt_skyblue.css
+    dhtmlxgantt.js 
+    locale/locale.js 
+    ext/dhtmlxgantt_marker.js 
+    ext/dhtmlxgantt_quick_info.js
+    ext/dhtmlxgantt_tooltip.js
+  )
+  ```
 
 in your `config/initializers/assets.rb` file.
+
+## Usage notes
+
+Gantt charts illustrate the start and finish dates of the terminal elements and summary elements of a project thus if your task has not `start_date` nor `duration` then it will not show up.
+
+In this example if you delete a project then all its links and tasks will be deleted too. Then you can continue by adding tasks which are not related (linked) to any project.
 
 ## Demo
 

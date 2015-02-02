@@ -3,7 +3,7 @@ class AdminController < ApplicationController
   end
 
   def data
-    tasks = Task.all
+    tasks = Task.gantt_valid
     links = GanttLink.all
     projects = Project.all
 
