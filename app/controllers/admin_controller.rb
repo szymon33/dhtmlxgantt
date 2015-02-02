@@ -3,22 +3,24 @@ class AdminController < ApplicationController
   end
 
   def data
-    tasks = Task.gantt_valid
-    links = GanttLink.all
-    projects = Project.all
+    # you can simple limit chart to your one project like this
+    # tasks = Task.gantt_data.where(project_id: your_project)
+    tasks    = Task.gantt_data
+    projects = tasks.select("projects.id","projects.name").uniq
+    links    = GanttLink.all
 
-    render :json => {
+    render json: {
       data: (projects.map do |project| 
         {
           id: "projects-#{project.id}",
-          text: project.text,
+          text: project.name,
           type: 'project',
           open: true
         }
       end) + tasks.map do |task|
         {
           id: "tasks-#{task.id}",
-          text: task.text,
+          text: task.name,
           start_date: task.start_date,
           duration: task.duration,
           progress: task.progress,
@@ -113,7 +115,7 @@ class AdminController < ApplicationController
   private
 
   def task_from_params(task, id)
-    task.text       = params["#{id}_text"]
+    task.name       = params["#{id}_text"]
     task.start_date = params["#{id}_start_date"]
     task.duration   = params["#{id}_duration"]
     task.progress   = params["#{id}_progress"]
@@ -127,7 +129,7 @@ class AdminController < ApplicationController
   end
 
   def project_from_params(project, id)
-    project.text    = params["#{id}_text"]
+    project.name    = params["#{id}_text"]
   end
 
 end

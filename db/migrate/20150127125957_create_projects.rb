@@ -4,7 +4,7 @@ class CreateProjects < ActiveRecord::Migration
     add_index :tasks, :project_id
 
     create_table :projects do |t|
-      t.string :text
+      t.string :name
 
       t.timestamps
     end

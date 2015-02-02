@@ -25,13 +25,13 @@ ActiveRecord::Schema.define(version: 20150127125957) do
   add_index "gantt_links", ["target_id"], name: "index_gantt_links_on_target_id", using: :btree
 
   create_table "projects", force: true do |t|
-    t.string   "text"
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "tasks", force: true do |t|
-    t.string   "text"
+    t.string   "name"
     t.date     "start_date"
     t.integer  "duration"
     t.float    "progress",   limit: 24
