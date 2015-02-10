@@ -14,15 +14,19 @@
 ActiveRecord::Schema.define(version: 20150127125957) do
 
   create_table "gantt_links", force: true do |t|
-    t.integer  "source_id"
-    t.integer  "target_id"
+    t.integer  "project_id"
+    t.integer  "targetable_id"
+    t.string   "targetable_type"
+    t.integer  "sourceable_id"
+    t.string   "sourceable_type"
     t.string   "gtype"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
-  add_index "gantt_links", ["source_id"], name: "index_gantt_links_on_source_id", using: :btree
-  add_index "gantt_links", ["target_id"], name: "index_gantt_links_on_target_id", using: :btree
+  add_index "gantt_links", ["project_id"], name: "index_gantt_links_on_project_id", using: :btree
+  add_index "gantt_links", ["sourceable_id", "sourceable_type"], name: "index_gantt_links_on_sourceable_id_and_sourceable_type", using: :btree
+  add_index "gantt_links", ["targetable_id", "targetable_type"], name: "index_gantt_links_on_targetable_id_and_targetable_type", using: :btree
 
   create_table "projects", force: true do |t|
     t.string   "name"
@@ -31,6 +35,7 @@ ActiveRecord::Schema.define(version: 20150127125957) do
   end
 
   create_table "tasks", force: true do |t|
+    t.integer  "project_id"
     t.string   "name"
     t.date     "start_date"
     t.integer  "duration"
@@ -39,7 +44,6 @@ ActiveRecord::Schema.define(version: 20150127125957) do
     t.integer  "parent"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "project_id"
   end
 
   add_index "tasks", ["project_id"], name: "index_tasks_on_project_id", using: :btree

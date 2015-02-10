@@ -58,9 +58,19 @@ in your `config/initializers/assets.rb` file.
 
 ## Usage notes
 
-Gantt charts illustrate the start and finish dates of the terminal elements and summary elements of a project thus if your task has not `start_date` nor `duration` then it will not show up.
+1. This example is developed to easily adapt to your own application.
 
-In this example if you delete a project then all its links and tasks will be deleted too. Then you can continue by adding tasks which are not related (linked) to any project.
+2. Project is kind of scope for Tasks and Links thus if you delete a project then all its links and tasks will be deleted too. 
+
+3. Gantt charts illustrate the start and finish dates of the terminal elements and summary elements of a project thus if your task has not `start_date` nor `duration` then it will not show up.
+
+4. Associations between links, tasks and project are polymorphic. So, you can easy expand the app to milestones, phases or any other custom object you like.
+
+5. In you want to silance "WARNING: Can't verify CSRF token authenticity" for json requests then you have to write in your `application_controller.rb` file:
+
+  ```ruby
+  protect_from_forgery with: :null_session, if: Proc.new { |c| c.request.format == 'application/json' }
+  ```
 
 ## Demo
 

@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
-  get 'admin/index'
-  get 'admin/data', as: 'data'
-  post "admin/db_action", :as => "db_action"
+  resources :gantts, only: [:index] do
+    collection do
+      get  :data, as: 'data'
+      post :db_action, :as => "db_action"
+    end
+  end
 
-  root :to => 'admin#index'
+  root to: 'gantts#index'
 end

@@ -1,13 +1,12 @@
 class CreateGanttLinks < ActiveRecord::Migration
   def change
     create_table :gantt_links do |t|
-      t.integer :source_id
-      t.integer :target_id
+      t.belongs_to :project, index: true
+      t.references :targetable, polymorphic: true, index: true
+      t.references :sourceable, polymorphic: true, index: true
       t.string  :gtype # 'type' is a reserver word in RoR
 
-      t.timestamps
+      t.timestamps null: false
     end
-    add_index :gantt_links, :source_id
-    add_index :gantt_links, :target_id
   end
 end

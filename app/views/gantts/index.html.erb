@@ -18,8 +18,8 @@
   gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
   gantt.config.order_branch = true;
   gantt.init("gantt_here");
-  gantt.load("<%= data_path %>", "json");
-  var dp = new dataProcessor("<%= db_action_path %>");
+  gantt.load("<%= data_gantts_path %>", "json");
+  var dp = new dataProcessor("<%= db_action_gantts_path %>");
   dp.init(gantt);
 </script>
 

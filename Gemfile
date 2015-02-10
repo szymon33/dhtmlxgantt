@@ -45,3 +45,7 @@ group :development do
   gem 'meta_request' 
   gem 'pry' 
 end
+
+group :test do
+  gem "codeclimate-test-reporter", group: :test, require: nil
+end

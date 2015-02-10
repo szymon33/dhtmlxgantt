@@ -1,12 +1,14 @@
-class AdminController < ApplicationController
+class GanttsController < ApplicationController
+
   def index
   end
+
 
   def data
     # you can simple limit chart to your one project like this
     # tasks = Task.gantt_data.where(project_id: your_project)
     tasks    = Task.gantt_data
-    projects = tasks.select("projects.id","projects.name").uniq
+    projects = tasks.select("projects.id, projects.name").uniq
     links    = GanttLink.all
 
     render json: {
@@ -32,13 +34,14 @@ class AdminController < ApplicationController
       links: links.map do |link|
       {
         id: link.id,
-        source: "tasks-#{link.source_id}", 
-        target: "tasks-#{link.target_id}", 
+        source: "#{link.sourceable_type.to_s.pluralize.downcase}-#{link.sourceable.id}", 
+        target: "#{link.targetable_type.to_s.pluralize.downcase}-#{link.targetable.id}", 
         type: link.gtype
       }  
       end
     }, status: :ok
   end  
+
 
   def db_action
     params['ids'].split(',').each do |id|
@@ -52,6 +55,7 @@ class AdminController < ApplicationController
       else
         params['gantt_mode']
       end
+      @gantt_mode = params['gantt_mode']
 
       case @gantt_mode
       when "tasks"
@@ -59,7 +63,7 @@ class AdminController < ApplicationController
         when "inserted"
             task = Task.new
             task_from_params(task, @id)
-            task.save
+            task.save!
             @tid = task.id
 
         when "deleted"
@@ -68,7 +72,7 @@ class AdminController < ApplicationController
 
         when "updated"
             task = Task.find(db_id)
-            task_from_params(task, @id)
+            task_from_params(task, @id)            
             task.save
             @tid = db_id
 
@@ -81,7 +85,7 @@ class AdminController < ApplicationController
         when "inserted"
             link = GanttLink.new
             link_from_params(link, @id)
-            link.save
+            link.save!
             @tid = link.id
 
         when "deleted"
@@ -91,7 +95,7 @@ class AdminController < ApplicationController
         when "updated"
             link = GanttLink.find(@id)
             link_from_params(link, @id)
-            link.save
+            link.save!
             @tid = link.id
         end        
 
@@ -105,7 +109,7 @@ class AdminController < ApplicationController
         when "updated"
             project = Project.find(db_id)
             project_from_params(project, @id)
-            project.save
+            project.save!
             @tid = project.id
         end              
       end
@@ -114,22 +118,30 @@ class AdminController < ApplicationController
 
   private
 
+  def project_from_params(project, id)
+    project.name    = params["#{id}_text"]
+  end
+  
   def task_from_params(task, id)
     task.name       = params["#{id}_text"]
     task.start_date = params["#{id}_start_date"]
     task.duration   = params["#{id}_duration"]
     task.progress   = params["#{id}_progress"]
+    task.parent     = params["#{id}_parent"].scan(/\d/).join('').to_i    
     task.project_id = params["#{id}_parent"].scan(/\d/).join('').to_i
   end
 
-  def link_from_params(link, id)    
-    link.source_id  = params["#{id}_source"].scan(/\d/).join('').to_i
-    link.target_id  = params["#{id}_target"].scan(/\d/).join('').to_i
+  def link_from_params(link, id)  
+    source_type = params["#{id}_source"].split('-')[0].classify.constantize
+    source_id   = params["#{id}_source"].split('-')[1].to_i
+
+    destination_type = params["#{id}_target"].split('-')[0].classify.constantize
+    destination_id   = params["#{id}_target"].split('-')[1].to_i
+
+    link.sourceable = source_type.find(source_id)
+    link.targetable = destination_type.find(destination_id)
     link.gtype      = params["#{id}_type"]
+    # inherit project scope
+    link.project_id = link.targetable.instance_of?(Project) ? link.targetable.id : link.targetable.project_id 
   end
-
-  def project_from_params(project, id)
-    project.name    = params["#{id}_text"]
-  end
-
 end
