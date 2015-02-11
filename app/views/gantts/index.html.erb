@@ -12,6 +12,12 @@
   html, body{ height:100%; padding:0px; margin:0px; overflow: hidden;}
 </style>
 
+<style>
+  div[task_id^='tasks-'] .gantt_add, .gantt_grid_head_add {
+    display: none !important;
+  }
+</style>
+
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script type="text/javascript">
@@ -22,9 +28,3 @@
   var dp = new dataProcessor("<%= db_action_gantts_path %>");
   dp.init(gantt);
 </script>
-
-<style>
-  div[task_id^='tasks-'] .gantt_add, .gantt_grid_head_add {
-    display: none !important;
-  }
-</style>

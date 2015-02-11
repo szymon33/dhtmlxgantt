@@ -26,7 +26,7 @@ class GanttsController < ApplicationController
           start_date: task.start_date,
           duration: task.duration,
           progress: task.progress,
-          parent: "projects-#{task.project_id}",
+          parent: "projects-#{task.parent}",
           type: 'task'
         }
       end,
@@ -45,17 +45,16 @@ class GanttsController < ApplicationController
 
   def db_action
     params['ids'].split(',').each do |id|
-      @id = id
-      db_id = @id.scan(/\d/).join('') unless @mode=='inserted'      
-      @mode = params["#{@id}_!nativeeditor_status"]    
+      @id   = id
+      @mode = params["#{@id}_!nativeeditor_status"]          
+      db_id = @id.split('-')[1].to_i unless @mode=='inserted'      
 
-      # project is a task but we need the project to be the project
+      # project looks like a task but we need the project to be the project
       @gantt_mode = if params['gantt_mode'] == 'tasks' and not @mode=='inserted' then
         @id.split('-')[0] 
       else
         params['gantt_mode']
       end
-      @gantt_mode = params['gantt_mode']
 
       case @gantt_mode
       when "tasks"
@@ -119,16 +118,16 @@ class GanttsController < ApplicationController
   private
 
   def project_from_params(project, id)
-    project.name    = params["#{id}_text"]
+    project.name    = params["#{id}_text"].to_s
   end
   
   def task_from_params(task, id)
-    task.name       = params["#{id}_text"]
-    task.start_date = params["#{id}_start_date"]
-    task.duration   = params["#{id}_duration"]
-    task.progress   = params["#{id}_progress"]
-    task.parent     = params["#{id}_parent"].scan(/\d/).join('').to_i    
-    task.project_id = params["#{id}_parent"].scan(/\d/).join('').to_i
+    task.name       = params["#{id}_text"].to_s
+    task.start_date = params["#{id}_start_date"].to_date
+    task.duration   = params["#{id}_duration"].to_i
+    task.progress   = params["#{id}_progress"].to_f
+    task.parent     = params["#{id}_parent"].split('-')[1].to_i  
+    task.project_id = task.parent # this is limitation
   end
 
   def link_from_params(link, id)  
