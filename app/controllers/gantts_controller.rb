@@ -26,34 +26,36 @@ class GanttsController < ApplicationController
           start_date: task.start_date,
           duration: task.duration,
           progress: task.progress,
-          parent: "projects-#{task.parent}",
+          sortorder: task.sortorder,
+          parent: "projects-#{task.project_id}",
           type: 'task'
         }
       end,
 
       links: links.map do |link|
       {
-        id: link.id,
+        id: "links-#{link.id}",
         source: "#{link.sourceable_type.to_s.pluralize.downcase}-#{link.sourceable.id}", 
         target: "#{link.targetable_type.to_s.pluralize.downcase}-#{link.targetable.id}", 
         type: link.gtype
       }  
       end
     }, status: :ok
-  end  
+  end
 
-
-  def db_action
+ def db_action
     params['ids'].split(',').each do |id|
       @id   = id
-      @mode = params["#{@id}_!nativeeditor_status"]          
-      db_id = @id.split('-')[1].to_i unless @mode=='inserted'      
 
+      @mode = params["#{@id}_!nativeeditor_status"]          
       # project looks like a task but we need the project to be the project
-      @gantt_mode = if params['gantt_mode'] == 'tasks' and not @mode=='inserted' then
-        @id.split('-')[0] 
+      if session["custom-#{id}"]
+        @gantt_mode = session["custom-#{id}"]['type'] 
+        db_id = session["custom-#{id}"]['id']
       else
-        params['gantt_mode']
+        # project update and delete look like a task but we need the project to be the project
+        @gantt_mode = if @mode=='inserted' then params['gantt_mode'] else @id.split('-')[0] end
+        db_id = @id.split('-')[1].to_i
       end
 
       case @gantt_mode
@@ -61,21 +63,26 @@ class GanttsController < ApplicationController
         case @mode
         when "inserted"
             task = Task.new
-            task_from_params(task, @id)
-            task.save!
-            @tid = task.id
+            task_from_params(task, @id)            
+            if task.save
+              session["custom-#{@id}"] = { id: task.id, type: @gantt_mode }
+              @tid = @id
+            end
 
         when "deleted"
             task = Task.find(db_id)
-            @tid = task.destroy.id
+            task.destroy
+            @tid= @id
 
         when "updated"
             task = Task.find(db_id)
             task_from_params(task, @id)            
-            task.save
-            @tid = db_id
+            if task.save
+              @tid = @id
+            end
 
         when "order"
+
         end              
 
 
@@ -84,18 +91,22 @@ class GanttsController < ApplicationController
         when "inserted"
             link = GanttLink.new
             link_from_params(link, @id)
-            link.save!
-            @tid = link.id
+            if link.save
+              session["custom-#{@id}"] = { id: link.id, type: @gantt_mode }
+              @tid = @id
+            end
 
         when "deleted"
-            link = GanttLink.find(@id)                  
-            @tid = link.destroy.id
+            link = GanttLink.find(db_id)
+            link.destroy
+            @tid = @id           
 
         when "updated"
-            link = GanttLink.find(@id)
+            link = GanttLink.find(db_id)
             link_from_params(link, @id)
-            link.save!
-            @tid = link.id
+            if link.save
+              @tid = @id
+            end
         end        
 
 
@@ -103,17 +114,19 @@ class GanttsController < ApplicationController
         case @mode
         when "deleted"
             project = Project.find(db_id)                  
-            @tid = project.destroy.id
+            project.destroy
+            @tid = @id
 
         when "updated"
             project = Project.find(db_id)
             project_from_params(project, @id)
-            project.save!
-            @tid = project.id
+            if project.save
+              @tid = @id
+            end
         end              
       end
     end
-  end
+  end 
 
   private
 
@@ -130,17 +143,33 @@ class GanttsController < ApplicationController
     task.project_id = task.parent # this is limitation
   end
 
-  def link_from_params(link, id)  
-    source_type = params["#{id}_source"].split('-')[0].classify.constantize
-    source_id   = params["#{id}_source"].split('-')[1].to_i
+  def link_from_params(link, id)
+    source_addr = params["#{id}_source"]
+    source = if (temp = session["custom-#{source_addr}"])
+      temp['type'] + "-" + temp['id'].to_s
+    else
+      source_addr
+    end
 
-    destination_type = params["#{id}_target"].split('-')[0].classify.constantize
-    destination_id   = params["#{id}_target"].split('-')[1].to_i
+    source_type = source.split('-')[0].classify.constantize
+    source_id   = source.split('-')[1].to_i
+
+    target_addr = params["#{id}_target"]
+    target = if (temp=session["custom-#{target_addr}"])
+      temp['type'] + "-" + temp['id'].to_s
+    else
+      target_addr
+    end
+
+    target_type = target.split('-')[0].classify.constantize
+    target_id   = target.split('-')[1].to_i
+
 
     link.sourceable = source_type.find(source_id)
-    link.targetable = destination_type.find(destination_id)
+    link.targetable = target_type.find(target_id)
     link.gtype      = params["#{id}_type"]
     # inherit project scope
     link.project_id = link.targetable.instance_of?(Project) ? link.targetable.id : link.targetable.project_id 
   end
+ 
 end

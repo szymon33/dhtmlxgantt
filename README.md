@@ -1,5 +1,6 @@
 # RoR implementation of dhtmlx Gantt chart
 
+[![Build Status](https://travis-ci.org/szymon33/dhtmlxgantt.svg?branch=master)](https://travis-ci.org/szymon33/dhtmlxgantt)
 [![Code Climate](https://codeclimate.com/github/szymon33/dhtmlxgantt/badges/gpa.svg)](https://codeclimate.com/github/szymon33/dhtmlxgantt)
 
 The Dhtmlxagantt is an application which implements [dhtmlx](http://dhtmlx.com/) Gantt chart in Rails framework as simple as possible. This document contains implementation notes and gotcha's.
