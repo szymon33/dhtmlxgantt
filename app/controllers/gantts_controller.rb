@@ -63,7 +63,7 @@ class GanttsController < ApplicationController
         case @mode
         when "inserted"
             task = Task.new
-            task_from_params(task, @id)            
+            task.from_params(params, @id)            
             if task.save
               session["custom-#{@id}"] = { id: task.id, type: @gantt_mode }
               @tid = @id
@@ -76,7 +76,7 @@ class GanttsController < ApplicationController
 
         when "updated"
             task = Task.find(db_id)
-            task_from_params(task, @id)            
+            task.from_params(params, @id)            
             if task.save
               @tid = @id
             end
@@ -90,7 +90,7 @@ class GanttsController < ApplicationController
         case @mode
         when "inserted"
             link = GanttLink.new
-            link_from_params(link, @id)
+            link.from_params(params, session, @id)
             if link.save
               session["custom-#{@id}"] = { id: link.id, type: @gantt_mode }
               @tid = @id
@@ -103,7 +103,7 @@ class GanttsController < ApplicationController
 
         when "updated"
             link = GanttLink.find(db_id)
-            link_from_params(link, @id)
+            link.from_params(params, session, @id)
             if link.save
               @tid = @id
             end
@@ -119,7 +119,7 @@ class GanttsController < ApplicationController
 
         when "updated"
             project = Project.find(db_id)
-            project_from_params(project, @id)
+            project.from_params(params, @id)
             if project.save
               @tid = @id
             end
@@ -128,48 +128,4 @@ class GanttsController < ApplicationController
     end
   end 
 
-  private
-
-  def project_from_params(project, id)
-    project.name    = params["#{id}_text"].to_s
-  end
-  
-  def task_from_params(task, id)
-    task.name       = params["#{id}_text"].to_s
-    task.start_date = params["#{id}_start_date"].to_date
-    task.duration   = params["#{id}_duration"].to_i
-    task.progress   = params["#{id}_progress"].to_f
-    task.parent     = params["#{id}_parent"].split('-')[1].to_i  
-    task.project_id = task.parent # this is limitation
-  end
-
-  def link_from_params(link, id)
-    source_addr = params["#{id}_source"]
-    source = if (temp = session["custom-#{source_addr}"])
-      temp['type'] + "-" + temp['id'].to_s
-    else
-      source_addr
-    end
-
-    source_type = source.split('-')[0].classify.constantize
-    source_id   = source.split('-')[1].to_i
-
-    target_addr = params["#{id}_target"]
-    target = if (temp=session["custom-#{target_addr}"])
-      temp['type'] + "-" + temp['id'].to_s
-    else
-      target_addr
-    end
-
-    target_type = target.split('-')[0].classify.constantize
-    target_id   = target.split('-')[1].to_i
-
-
-    link.sourceable = source_type.find(source_id)
-    link.targetable = target_type.find(target_id)
-    link.gtype      = params["#{id}_type"]
-    # inherit project scope
-    link.project_id = link.targetable.instance_of?(Project) ? link.targetable.id : link.targetable.project_id 
-  end
- 
 end
