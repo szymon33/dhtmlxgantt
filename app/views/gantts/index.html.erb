@@ -1,12 +1,13 @@
 <%= stylesheet_link_tag "dhtmlxgantt", :media => "all" %>
-<%= stylesheet_link_tag "skins/dhtmlxgantt_skyblue", :media=> "all" %> 
+<%= stylesheet_link_tag "skins/dhtmlxgantt_skyblue", :media=> "all" %>
 
-<%= javascript_include_tag "dhtmlxgantt" %>  
-<%= javascript_include_tag "locale/locale" %>  
+<%= javascript_include_tag "dhtmlxgantt" %>
+<%= javascript_include_tag "locale/locale" %>
 
-<%= javascript_include_tag "ext/dhtmlxgantt_marker" %>  
-<%= javascript_include_tag "ext/dhtmlxgantt_quick_info" %>  
-<%= javascript_include_tag "ext/dhtmlxgantt_tooltip" %>      
+<%= javascript_include_tag "ext/dhtmlxgantt_marker" %>
+<%= javascript_include_tag "ext/dhtmlxgantt_quick_info" %>
+<%= javascript_include_tag "ext/dhtmlxgantt_tooltip" %>
+<%= javascript_include_tag "ext/dhtmlxgantt_expand.js" %>
 
 <style type="text/css">
   html, body{ height:100%; padding:0px; margin:0px; overflow: hidden;}
@@ -16,6 +17,17 @@
   div[task_id^='tasks-'] .gantt_add, .gantt_grid_head_add {
     display: none !important;
   }
+  .dhx_expand_icon {
+    position:absolute;
+    top:0px;
+    right:0px;
+    background-image:url(data:image/gif;base64,R0lGODlhEgAkANUmAAAAAIqWpo+croyYqpKfs1xqfpiox3qJooqZtWt5kFBebwUFBpWjuQYGB3B7kWt1ipyrxKOy0Ki52aa21Zinv5+uylFZahQWGicrMmNtgAsNDzE2QB0gJjxCTjc8Rg8RExseIlJbakZMWSksM1tjdkdOXMLV/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAACYALAAAAAASACQAAAbhQJNwSCwaj8ikcsFsOp8LoSZArVqrAI3wMuh6v4BB+CLkCM7oNABw5ggxhLh8vgYQMEIAQ8/f+xmAG0IdCoWGhwAUih15BY6PkBCSECVCFgmYmZoAFZ0WeQehoqMRpREkQhkIq6ytABOwGXkGtLW2ErgSD0IOAL2/vsEOww5KxsfIycrLeSYAztDP0tDOV9ZVRF/a2s/Oad/fRHPj490ADejp6g2ADEMXh/EKH4oU5pD4BSCTQxua/wlGdKpgbpTBAx5MDbHQqiECEbAmmLNF0UCIXEMeANDIcaPHaMxCCgkCADs=);
+    width:18px;
+    height:18px;
+    cursor:pointer;
+    background-position:0px 18px;
+    z-index:16;
+  }  
 </style>
 
 <div id="gantt_here" style='width:100%; height:100%;'></div>

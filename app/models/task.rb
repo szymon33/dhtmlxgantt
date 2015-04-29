@@ -6,7 +6,11 @@ class Task < ActiveRecord::Base
   # Below Rails 4
   # scope :gantt_data, where("start_date IS NOT NULL AND duration IS NOT NULL").joins(:project)
   # Rails 4 and above
-  scope :gantt_data, -> { where.not(start_date: nil, duration: nil).joins(:project) }
+  scope :gantt_data, -> { where.not(start_date: nil, duration: nil).order(:sortorder).joins(:project) }
+
+  def reorder(arg)
+    
+  end
 
   def from_params(params, id)
     self.name       = params["#{id}_text"].to_s

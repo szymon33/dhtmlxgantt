@@ -11,9 +11,10 @@ Rails.application.config.assets.version = '1.0'
 Rails.application.config.assets.precompile += %w( 
   dhtmlxgantt.css 
   skins/dhtmlxgantt_skyblue.css
-  dhtmlxgantt.js 
+  dhtmlxgantt.js
   locale/locale.js 
   ext/dhtmlxgantt_marker.js 
   ext/dhtmlxgantt_quick_info.js
   ext/dhtmlxgantt_tooltip.js
+  ext/dhtmlxgantt_expand.js  
 )

@@ -62,27 +62,27 @@ class GanttsController < ApplicationController
       when "tasks"
         case @mode
         when "inserted"
-            task = Task.new
-            task.from_params(params, @id)            
-            if task.save
-              session["custom-#{@id}"] = { id: task.id, type: @gantt_mode }
-              @tid = @id
-            end
+          task = Task.new
+          task.from_params(params, @id)            
+          if task.save
+            session["custom-#{@id}"] = { id: task.id, type: @gantt_mode }
+            @tid = @id
+          end
 
         when "deleted"
-            task = Task.find(db_id)
-            task.destroy
-            @tid= @id
+          task = Task.find(db_id)
+          task.destroy
+          @tid= @id
 
         when "updated"
-            task = Task.find(db_id)
-            task.from_params(params, @id)            
-            if task.save
-              @tid = @id
-            end
+          task = Task.find(db_id)
+          task.from_params(params, @id)            
+          if task.save
+            @tid = @id
+          end
 
         when "order"
-
+          Task.reorder(params)
         end              
 
 
