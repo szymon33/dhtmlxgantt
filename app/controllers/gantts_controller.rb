@@ -82,7 +82,8 @@ class GanttsController < ApplicationController
           end
 
         when "order"
-          Task.reorder(params)
+          task = Task.find(db_id)
+          task.reorder(params["tasks-#{task.id}_target"].split('-')[1].to_i)
         end              
 
 

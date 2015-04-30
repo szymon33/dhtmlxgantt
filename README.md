@@ -38,7 +38,7 @@ If you want to omit these limitation and keep standard edition then simply take 
 
 3. You can add only tasks but not a project because functionality of milestones, projects and adding custom types has been moved to PRO version (commercial or enterprise editions).
 
-## Extending dhtmlx default widget configuration
+## Extending dhtmlx default widget
 
 I have add the following extansions to default library:
 

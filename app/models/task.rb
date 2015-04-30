@@ -8,8 +8,16 @@ class Task < ActiveRecord::Base
   # Rails 4 and above
   scope :gantt_data, -> { where.not(start_date: nil, duration: nil).order(:sortorder).joins(:project) }
 
-  def reorder(arg)
-    
+  def reorder(target)
+    source_row = self
+    target_row = Task.find(target)
+    from = Task.gantt_data.index(source_row)
+    to   = Task.gantt_data.index(target_row)
+    if from < to
+      effected = Task.gantt_data[from..to]
+    else
+      effected = Task.gantt_data[to..from]
+    end
   end
 
   def from_params(params, id)

@@ -33,6 +33,17 @@
 <div id="gantt_here" style='width:100%; height:100%;'></div>
 
 <script type="text/javascript">
+
+  // Add today marker
+  var today = new Date();
+  var date_to_str = gantt.date.date_to_str(gantt.config.task_date);
+  gantt.addMarker({
+    start_date: today,
+    css: "today",
+    text: "Today",
+    title: "Today: " + date_to_str(today)
+  });
+
   gantt.config.xml_date = "%Y-%m-%d %H:%i:%s";
   gantt.config.order_branch = true;
   gantt.init("gantt_here");
